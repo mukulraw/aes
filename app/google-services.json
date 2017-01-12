@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "32523257227",
+    "project_id": "solo-app-155410"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32523257227:android:4cf182b35335d5a5",
+        "android_client_info": {
+          "package_name": "com.example.solomon.soloapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "32523257227-a8rolm9tjmp5bhgg3jf4d8qiomhi8akv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.solomon.soloapp",
+            "certificate_hash": "379D155DA08432BCE30900AA0701EDEBFD8132EF"
+          }
+        },
+        {
+          "client_id": "32523257227-or0vcvh3r756hqeodrtphmefob52lj3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_c-CTcUj-mT9pYmmySc5sE9bOAxVtSIw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
