@@ -1,11 +1,18 @@
 package com.example.solomon.soloapp;
 
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -13,10 +20,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.solomon.soloapp.POJO.uploadBean;
+import com.example.solomon.soloapp.interfaces.allAPIs;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -25,10 +37,21 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
 
     String seedValue = "This Is MySecure";
 
+    Button download;
 
     Button open;
     ImageView encImage , decImage;
@@ -36,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
     byte[] encodedBytes = null;
     byte[] decodedBytes = null;
 
+    String path;
+    ProgressBar progress;
+
+    String userId;
+
+    String filename;
+    String key;
 
     TextView tvencoded;
     TextView tvdecoded;
@@ -48,17 +78,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ScrollView scroll = (ScrollView)findViewById(R.id.scroll);
 
-        scroll.setSmoothScrollingEnabled(true);
+        progress = (ProgressBar)findViewById(R.id.progress);
+
+        bean b = (bean)getApplicationContext();
+
+        userId = b.id;
+
+        download = (Button)findViewById(R.id.view);
 
 
-        tvencoded = (TextView)findViewById(R.id.enc);
-        tvdecoded = (TextView)findViewById(R.id.dec);
+
+
 
         open = (Button)findViewById(R.id.open);
-        encImage = (ImageView)findViewById(R.id.enc_image);
-        decImage = (ImageView)findViewById(R.id.dec_image);
+
 
 
 
@@ -66,10 +100,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                progress.setVisibility(View.VISIBLE);
+
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 // tells your intent to get the contents
 // opens the URI for your image directory on your sdcard
-                intent.setType("image/*");
+                intent.setType("*/*");
                 startActivityForResult(intent, 1);
 
             }
@@ -88,17 +124,20 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             Uri selectedImageUri = data.getData();
-            Log.d("URI VAL", "selectedImageUri = " + selectedImageUri.toString());
 
 
-            try {
-                original = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(String.valueOf(data.getData())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            path = getPath(getApplicationContext() , selectedImageUri);
+
+            Cursor returnCursor =
+                    getContentResolver().query(selectedImageUri, null, null, null, null);
+
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
 
-            new doTask(original , encImage , decImage , tvencoded , tvdecoded).execute();
+            //filename = returnCursor.getString(nameIndex);
+
+            new doTask().execute();
 
 
 
@@ -109,27 +148,127 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private static String getPath(final Context context, final Uri uri)
+    {
+        final boolean isKitKatOrAbove = Build.VERSION.SDK_INT >=  Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (isKitKatOrAbove && DocumentsContract.isDocumentUri(context, uri)) {
+                // ExternalStorageProvider
+                if (isExternalStorageDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+
+                    if ("primary".equalsIgnoreCase(type)) {
+                        return Environment.getExternalStorageDirectory() + "/" + split[1];
+                    }
+
+                    // TODO handle non-primary volumes
+                }
+                // DownloadsProvider
+                else if (isDownloadsDocument(uri)) {
+
+                    final String id = DocumentsContract.getDocumentId(uri);
+                    final Uri contentUri = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+                    return getDataColumn(context, contentUri, null, null);
+                }
+                // MediaProvider
+                else if (isMediaDocument(uri)) {
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+
+                    Uri contentUri = null;
+                    if ("image".equals(type)) {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video".equals(type)) {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio".equals(type)) {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+
+                    final String selection = "_id=?";
+                    final String[] selectionArgs = new String[] {
+                            split[1]
+                    };
+
+                    return getDataColumn(context, contentUri, selection, selectionArgs);
+                }
+            }
+            // MediaStore (and general)
+            else if ("content".equalsIgnoreCase(uri.getScheme())) {
+                return getDataColumn(context, uri, null, null);
+            }
+            // File
+            else if ("file".equalsIgnoreCase(uri.getScheme())) {
+                return uri.getPath();
+            }
+        }
+
+        return null;
+    }
+
+
+    private static String getDataColumn(Context context, Uri uri, String selection,
+                                        String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {
+                column
+        };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int column_index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(column_index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+
+    private static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    private static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    private static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
 
     public class doTask extends AsyncTask<Void , Void , Void>
     {
 
-        Bitmap ori;
-        ImageView encImage;
-        ImageView decImage;
-        TextView tvencoded;
-        TextView tvdecoded;
-        Bitmap bitmap;
+        File f = null;
 
         String e , d;
 
 
-        public doTask(Bitmap ori , ImageView encImage , ImageView decImage , TextView tvencoded , TextView tvdecoded)
+        public doTask()
         {
-            this.ori = ori;
-            this.encImage = encImage;
-            this.decImage = decImage;
-            this.tvencoded = tvencoded;
-            this.tvdecoded = tvdecoded;
+
         }
 
 
@@ -137,8 +276,20 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            ori.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
+
+
+            if (path!=null)
+            {
+                f = new File(path);
+            }
+
+
+            byte[] byteArray = new byte[0];
+            try {
+                byteArray = Util.readBytesFromFile(f);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 
             Log.d("original" , Arrays.toString(byteArray));
 
@@ -147,10 +298,19 @@ public class MainActivity extends AppCompatActivity {
             SecretKeySpec sks = null;
             try {
                 SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-                sr.setSeed(seedValue.getBytes());
+                sr.setSeed(seedValue.getBytes("UTF-8"));
                 KeyGenerator kg = KeyGenerator.getInstance("AES");
                 kg.init(128, sr);
+
                 sks = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
+
+                //key = Arrays.toString(sks.getEncoded());
+
+                key = Base64.encodeToString(sks.getEncoded() , Base64.NO_PADDING);
+
+
+                Log.d("asdasdasKEY" , key);
+
             } catch (Exception e) {
                 Log.e("asdasdasd", "AES secret key spec error");
             }
@@ -170,8 +330,6 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("encrypted" , Arrays.toString(encodedBytes));
 
-            encrypted = BitmapFactory.decodeByteArray(encodedBytes, 0,
-                    encodedBytes.length);
 
 
             //setEncrypted(encrypted);
@@ -187,7 +345,12 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 Cipher c = Cipher.getInstance("AES");
-                c.init(Cipher.DECRYPT_MODE, sks);
+
+                //Log.d("asdasdKEY2" , Arrays.toString(new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING), "AES").getEncoded()));
+
+                Log.d("asdasdKEY2" , Base64.encodeToString(new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING), "AES").getEncoded() , Base64.DEFAULT));
+
+                c.init(Cipher.DECRYPT_MODE, new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING) , "AES"));
                 decodedBytes = c.doFinal(encodedBytes);
             } catch (Exception e) {
                 Log.e("asdasasdasd" , "AES decryption error");
@@ -195,8 +358,6 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("decoded" , Arrays.toString(decodedBytes));
 
-            bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0,
-                    decodedBytes.length);
 
 
 
@@ -210,16 +371,42 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            encImage.setImageBitmap(encrypted);
 
 
-            tvencoded.setText("[ENCODED]:\n" +
-                    e);
+            try {
+                Util.writeBytesToFile(f , encodedBytes);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 
-            decImage.setImageBitmap(bitmap);
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://nationproducts.in/")
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            allAPIs cr = retrofit.create(allAPIs.class);
+
+            RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), f);
+
+            MultipartBody.Part body = MultipartBody.Part.createFormData("video", f.getName(), reqFile);
+
+            Call<uploadBean> call = cr.upload(userId , key , filename , body);
+
+            call.enqueue(new Callback<uploadBean>() {
+                @Override
+                public void onResponse(Call<uploadBean> call, Response<uploadBean> response) {
+                    progress.setVisibility(View.GONE);
 
 
-            tvdecoded.setText("[DECODED]:\n" + new String(decodedBytes));
+                }
+
+                @Override
+                public void onFailure(Call<uploadBean> call, Throwable t) {
+                    progress.setVisibility(View.GONE);
+                }
+            });
 
 
         }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:id="@+id/scroll"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="com.example.solomon.soloapp.MainActivity">
 
 
@@ -13,45 +14,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_centerInParent="true"
         >
 
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="open"
+
+            android:text="ENCRYPT/ UPLOAD"
+            android:layout_margin="18dp"
             android:id="@+id/open"
             android:layout_gravity="center_horizontal"
             />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/enc"
-        android:textSize="6sp"
-        />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:id="@+id/enc_image"
+            android:text="DECRYPT/ DOWNLOAD"
+            android:layout_margin="18dp"
+            android:id="@+id/view"
+            android:layout_gravity="center_horizontal"
             />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:id="@+id/dec"
-        android:textSize="6sp"
-        />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:id="@+id/dec_image"
-            />
+
+
 
     </LinearLayout>
 
-</ScrollView>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>
