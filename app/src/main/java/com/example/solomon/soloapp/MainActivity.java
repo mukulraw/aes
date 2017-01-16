@@ -88,6 +88,15 @@ public class MainActivity extends AppCompatActivity {
         download = (Button)findViewById(R.id.view);
 
 
+        download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext() , ViewActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
 
 
@@ -390,7 +399,9 @@ public class MainActivity extends AppCompatActivity {
 
             RequestBody reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), f);
 
-            MultipartBody.Part body = MultipartBody.Part.createFormData("video", f.getName(), reqFile);
+            filename = f.getName();
+
+            MultipartBody.Part body = MultipartBody.Part.createFormData("encreptedfile", f.getName(), reqFile);
 
             Call<uploadBean> call = cr.upload(userId , key , filename , body);
 
