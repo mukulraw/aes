@@ -1,5 +1,6 @@
 package com.example.solomon.soloapp;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -13,7 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.solomon.soloapp.POJO.AllFileDetail;
 import com.example.solomon.soloapp.POJO.allBean;
@@ -45,11 +48,20 @@ public class ViewActivity extends AppCompatActivity {
     GridLayoutManager manager;
     GridAdapter adapter;
     String userId;
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
+
+        dialog = new Dialog(ViewActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.progress_layout);
+
+
+
         grid = (RecyclerView)findViewById(R.id.grid);
 
         bean b = (bean)getApplicationContext();
@@ -65,6 +77,9 @@ public class ViewActivity extends AppCompatActivity {
         grid.setLayoutManager(manager);
         grid.setAdapter(adapter);
 
+
+
+        dialog.show();
 
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -83,11 +98,14 @@ public class ViewActivity extends AppCompatActivity {
 
                 list = response.body().getAllFileDetail();
                 adapter.setGridData(list);
+                dialog.dismiss();
 
             }
 
             @Override
             public void onFailure(Call<allBean> call, Throwable t) {
+
+                dialog.dismiss();
 
             }
         });
@@ -134,6 +152,8 @@ public class ViewActivity extends AppCompatActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    dialog.show();
 
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl("http://nationproducts.in/")
@@ -312,6 +332,10 @@ public class ViewActivity extends AppCompatActivity {
                 e1.printStackTrace();
             }
 
+
+            Toast.makeText(getApplicationContext() , "Download Success" , Toast.LENGTH_SHORT).show();
+
+            dialog.dismiss();
 
             Log.d("asdasdasd", "Download success: " + result);
             // TODO: show a snackbar or a toast

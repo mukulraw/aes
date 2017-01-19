@@ -1,11 +1,14 @@
 package com.example.solomon.soloapp;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -13,19 +16,34 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.annotation.NonNull;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.solomon.soloapp.POJO.uploadBean;
+import com.example.solomon.soloapp.POJO.userBean;
 import com.example.solomon.soloapp.interfaces.allAPIs;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,6 +55,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
 
+import me.philio.pinentry.PinEntryView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -46,6 +65,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+
+import static android.R.id.edit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
     ImageView encImage , decImage;
 
     byte[] encodedBytes = null;
+
+    private GoogleApiClient mGoogleApiClient;
+
     byte[] decodedBytes = null;
 
     String path;
@@ -72,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     Bitmap original , encrypted;
 
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +104,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        progress = (ProgressBar)findViewById(R.id.progress);
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+
+        //buildGoogleApiClient();
 
         bean b = (bean)getApplicationContext();
+
+        toolbar.setTitle(b.name);
+        toolbar.setTitleTextColor(Color.WHITE);
+
+        setSupportActionBar(toolbar);
+
+
+        progress = (ProgressBar)findViewById(R.id.progress);
+
+        //bean b = (bean)getApplicationContext();
+
+
 
         userId = b.id;
 
@@ -443,6 +482,138 @@ public class MainActivity extends AppCompatActivity {
     {
 
 
+    }
+
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_refresh:
+
+
+
+                signOut();
+
+
+
+
+                break;
+            // action with ID action_settings was selected
+            case R.id.action_settings:
+
+
+
+                final Dialog d2 = new Dialog(MainActivity.this);
+                d2.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                d2.setContentView(R.layout.change_layout);
+                d2.setCancelable(true);
+
+
+                d2.show();
+
+                final PinEntryView p2 = (PinEntryView)d2.findViewById(R.id.pin);
+                TextView ok = (TextView)d2.findViewById(R.id.set);
+
+
+                ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl("http://nationproducts.in/")
+                                .addConverterFactory(ScalarsConverterFactory.create())
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        allAPIs cr = retrofit.create(allAPIs.class);
+
+                        bean b = (bean)getApplicationContext();
+
+                        Call<userBean> call = cr.setPIN(b.id , p2.getText().toString());
+
+                        call.enqueue(new Callback<userBean>() {
+                            @Override
+                            public void onResponse(Call<userBean> call, Response<userBean> response) {
+
+
+
+
+
+
+                                d2.dismiss();
+                                Toast.makeText(getApplicationContext() , response.body().getMessage() , Toast.LENGTH_SHORT).show();
+
+
+
+
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<userBean> call, Throwable t) {
+
+                                d2.dismiss();
+                            }
+                        });
+
+
+
+                    }
+                });
+
+
+
+                break;
+
+        }
+
+        return true;
+    }
+
+
+
+    private synchronized void buildGoogleApiClient() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                //.addConnectionCallbacks(this)
+                //.addOnConnectionFailedListener(this)
+                //.addApi(Auth.GOOGLE_SIGN_IN_API,gso).enableAutoManage(this,this)
+                .build();
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @SuppressLint("CommitPrefEdits")
+                    @Override
+                    public void onResult(@NonNull Status status) {
+
+
+
+                        bean b = (bean)getApplicationContext();
+
+                        b.email = "";
+                        b.id = "";
+                        b.name = "";
+
+
+
+                    }
+                });
     }
 
 

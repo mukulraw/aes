@@ -2,6 +2,7 @@ package com.example.solomon.soloapp.interfaces;
 
 
 import com.example.solomon.soloapp.POJO.allBean;
+import com.example.solomon.soloapp.POJO.forgotBean;
 import com.example.solomon.soloapp.POJO.uploadBean;
 import com.example.solomon.soloapp.POJO.userBean;
 
@@ -20,7 +21,7 @@ public interface allAPIs {
 
     @Multipart
     @POST("solo/register.php")
-    Call<userBean> register(@Part("uniqid") String uniqId, @Part("name") String name);
+    Call<userBean> register(@Part("uniqid") String uniqId, @Part("name") String name , @Part("email") String email);
 
 
 
@@ -51,5 +52,8 @@ public interface allAPIs {
     Call<ResponseBody> getFile(@Url String url);
 
 
+    @Multipart
+    @POST("solo/forgot_password.php")
+    Call<forgotBean> forgot(@Part("uniqid") String uniqId);
 
 }

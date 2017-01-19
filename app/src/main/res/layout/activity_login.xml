@@ -18,32 +18,22 @@
         >
 
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="#fff"
-            android:textSize="18sp"
-            android:padding="10dp"
-            android:typeface="sans"
-            android:text="Sign In to continue"
-            />
+
 
     <TextView
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:id="@+id/sign_in_button"
+        android:layout_gravity="center_horizontal"
         android:background="@drawable/white_back_round"
         android:gravity="center"
         android:padding="10dp"
 
-        android:text="SIGN IN"
+        android:text="Sign In to continue"
         android:drawableStart="@drawable/google"
-        android:drawablePadding="-18dp"
+        android:drawablePadding="10dp"
         android:layout_marginStart="18dp"
-        android:layout_marginBottom="18dp"
+
         android:layout_marginEnd="18dp"
 
         />
@@ -53,5 +43,15 @@
 
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#fff"
+        android:text="Solo App"
+        android:textSize="24sp"
+        android:padding="18dp"
+        />
 
 </RelativeLayout>

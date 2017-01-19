@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     private static final int RC_SIGN_IN = 9001;
 
+    Dialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
         google_signin = (TextView) findViewById(R.id.sign_in_button);
 
+        dialog = new Dialog(Login.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.progress_layout);
 
 
 
@@ -118,6 +125,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
     }
 
     private void signIn() {
+        dialog.show();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -177,7 +185,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
 
-            register(String.valueOf(acct.getId()) , acct.getDisplayName());
+            register(String.valueOf(acct.getId()) , acct.getDisplayName() , acct.getEmail());
 
 
 
@@ -195,7 +203,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
 
-    private void register(final String id , final String name)
+    private void register(final String id , final String name , final String email)
     {
 
         Log.d("asdasdasdasdasd" , "register");
@@ -209,13 +217,18 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
         allAPIs cr = retrofit.create(allAPIs.class);
 
 
-        Call<userBean> call = cr.register(id , name);
+        Call<userBean> call = cr.register(id , name , email);
 
 
         call.enqueue(new Callback<userBean>() {
             @Override
             public void onResponse(Call<userBean> call, Response<userBean> response) {
 
+
+                bean b = (bean)getApplicationContext();
+
+                b.email = id;
+                b.name = name;
 
                 login(id , name);
 
@@ -225,6 +238,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
             @Override
             public void onFailure(Call<userBean> call, Throwable t) {
+
+                dialog.dismiss();
 
             }
         });
@@ -271,6 +286,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
                         Intent intent = new Intent(getApplicationContext() , InsertPIN.class);
                         startActivity(intent);
+                        dialog.dismiss();
                         finish();
 
                         Log.d("ASDASD", "PIN available");
@@ -280,6 +296,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
                         Intent intent = new Intent(getApplicationContext() , SetPIN.class);
                         startActivity(intent);
+                        dialog.dismiss();
                         finish();
 
                         Log.d("ASDASD", "PIN unavailable");
@@ -293,6 +310,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
             @Override
             public void onFailure(Call<userBean> call, Throwable t) {
+
+                dialog.dismiss();
 
             }
         });

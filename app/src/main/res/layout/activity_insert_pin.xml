@@ -23,7 +23,7 @@
             android:padding="10dp"
             android:gravity="center"
             android:textColor="#fff"
-            android:text="Enter PIN to continue"
+            android:text="Enter your secure PIN"
             />
 
 
@@ -43,16 +43,32 @@
             />
 
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="OK"
+            android:text="SUBMIT"
             android:textColor="#fff"
-            android:textSize="24sp"
-            android:padding="18dp"
+            android:background="@drawable/button_back"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
             android:id="@+id/set"
             />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/forgot"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="I forgot my PIN"
+            android:textColor="#fff"
+            />
+
+
+
 
 
     </LinearLayout>
