@@ -190,12 +190,17 @@ public class ViewActivity extends AppCompatActivity {
 
         String TAG = "asdasdasd";
 
-        final String appDirectoryName = "SoloApp";
-        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), appDirectoryName);
+
+
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()+ "/SoloApp/");
+
+
+
         final String filename;
 
         String key;
+
+        String path = Environment.getExternalStorageDirectory().toString();
 
         byte[] decodedBytes = null;
 
@@ -210,8 +215,24 @@ public class ViewActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(InputStream... params) {
+
+            if (!(dir.exists() && dir.isDirectory())) {
+                dir.mkdirs();
+            }
+
             InputStream inputStream = params[0];
-            file = new File(imageRoot, filename);
+
+
+
+            try {
+                file = new File(dir , filename);
+
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
             OutputStream output = null;
             try {
                 output = new FileOutputStream(file);
@@ -219,7 +240,7 @@ public class ViewActivity extends AppCompatActivity {
                 byte[] buffer = new byte[1024]; // or other buffer size
                 int read;
 
-                Log.d(TAG, "Attempting to write to: " + imageRoot + "/" + filename);
+                Log.d(TAG, "Attempting to write to: " + dir + "/" + filename);
                 while ((read = inputStream.read(buffer)) != -1) {
                     output.write(buffer, 0, read);
                     Log.v(TAG, "Writing to buffer to output stream.");
