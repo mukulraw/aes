@@ -8,12 +8,31 @@
     tools:context="com.example.solomon.soloapp.SetPIN">
 
 
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:gravity="center"
+        android:text="Solo App"
+        android:textColor="#fff"
+        android:layout_alignParentTop="true"
+        android:textSize="22sp"
+        />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
         >
+
+
+
+
+
+
 
 
         <TextView
@@ -42,14 +61,15 @@
             />
 
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="SET"
             android:textColor="#fff"
-            android:textSize="24sp"
-            android:padding="18dp"
+            android:background="@drawable/button_back"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
             android:id="@+id/set"
             />
 

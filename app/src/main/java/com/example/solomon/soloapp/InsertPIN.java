@@ -2,9 +2,11 @@ package com.example.solomon.soloapp;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -32,6 +34,7 @@ public class InsertPIN extends AppCompatActivity {
     TextView forgot;
     String id;
     Dialog dialog;
+    Toolbar toolbar;
 
 
 
@@ -39,6 +42,16 @@ public class InsertPIN extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_pin);
+
+
+        //oolbar = (Toolbar)findViewById(R.id.toolbar);
+
+
+        //setSupportActionBar(toolbar);
+
+
+
+
 
         dialog = new Dialog(InsertPIN.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -11,42 +11,136 @@
 
 
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:id="@+id/toolbar"
-        android:background="@color/colorPrimaryDark"
-        />
+
+
+
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_centerInParent="true"
-        >
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/progress">
 
 
-        <Button
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ENCRYPT/ UPLOAD"
-            android:layout_margin="28dp"
-            android:id="@+id/open"
-            android:layout_gravity="center_horizontal"
+            android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
+            android:id="@+id/toolbar"
             />
 
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:text="Solo App"
+            android:textColor="#fff"
+            android:layout_alignParentTop="true"
+            android:textSize="22sp"
+            />
+
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="7"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Encrypt your confidential files and save to cloud"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:gravity="center_horizontal"
+            android:textColor="#fff"
+            />
+
+
+                    <Button
+                        android:id="@+id/open"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="28dp"
+                        android:background="@drawable/black"
+                        android:text="ENCRYPT"
+                        android:textColor="#fff" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="3"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_centerInParent="true"
+                    >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Download and decrypt your encrypted file"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:gravity="center_horizontal"
+            android:textColor="#fff"
+            />
+
+
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DECRYPT/ DOWNLOAD"
+            android:text="DECRYPT"
             android:layout_margin="28dp"
+            android:background="@drawable/white"
+            android:textColor="#000"
             android:id="@+id/view"
             android:layout_gravity="center_horizontal"
             />
 
+                </LinearLayout>
 
+            </RelativeLayout>
+
+
+        </LinearLayout>
 
 
 

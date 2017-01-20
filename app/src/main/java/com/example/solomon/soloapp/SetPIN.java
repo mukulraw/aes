@@ -1,11 +1,16 @@
 package com.example.solomon.soloapp;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,25 +29,42 @@ public class SetPIN extends AppCompatActivity {
 
 
     PinEntryView pin;
-    TextView set;
+    Button set;
     String id;
+
+    Dialog dialog;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_pin);
 
+
+
+
+
+
+        dialog = new Dialog(SetPIN.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.progress_layout);
+
+
+
         bean b = (bean)getApplicationContext();
 
         id = b.id;
 
         pin = (PinEntryView)findViewById(R.id.pin);
-        set = (TextView)findViewById(R.id.set);
+        set = (Button)findViewById(R.id.set);
 
 
         set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 setPIN(pin.getText().toString());
 
@@ -58,6 +80,8 @@ public class SetPIN extends AppCompatActivity {
 
     private void setPIN(String pin)
     {
+
+        dialog.show();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://nationproducts.in/")
@@ -77,6 +101,7 @@ public class SetPIN extends AppCompatActivity {
 
 
                 Intent intent = new Intent(getApplicationContext() , InsertPIN.class);
+                dialog.dismiss();
                 startActivity(intent);
                 finish();
 

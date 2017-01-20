@@ -17,6 +17,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ import com.example.solomon.soloapp.POJO.userBean;
 import com.example.solomon.soloapp.interfaces.allAPIs;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -68,7 +70,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import static android.R.id.edit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     String seedValue = "This Is MySecure";
 
@@ -104,14 +106,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        buildGoogleApiClient();
+
+
         toolbar = (Toolbar)findViewById(R.id.toolbar);
 
         //buildGoogleApiClient();
 
         bean b = (bean)getApplicationContext();
 
-        toolbar.setTitle(b.name);
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("");
 
         setSupportActionBar(toolbar);
 
@@ -175,20 +179,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            path = getPath(getApplicationContext() , selectedImageUri);
-
-            Cursor returnCursor =
-                    getContentResolver().query(selectedImageUri, null, null, null, null);
-
-            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            if (resultCode == RESULT_OK) {
 
 
-            //filename = returnCursor.getString(nameIndex);
+                path = getPath(getApplicationContext(), selectedImageUri);
 
-            new doTask().execute();
+                Cursor returnCursor =
+                        getContentResolver().query(selectedImageUri, null, null, null, null);
+
+                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
 
+                //filename = returnCursor.getString(nameIndex);
 
+                new doTask().execute();
+
+
+            }
 
 
         }
@@ -303,6 +310,21 @@ public class MainActivity extends AppCompatActivity {
      */
     private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
 
@@ -449,6 +471,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onResponse(Call<uploadBean> call, Response<uploadBean> response) {
                     progress.setVisibility(View.GONE);
 
+                    f.delete();
+
 
                 }
 
@@ -485,9 +509,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.clear();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
@@ -589,9 +613,9 @@ public class MainActivity extends AppCompatActivity {
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                //.addConnectionCallbacks(this)
-                //.addOnConnectionFailedListener(this)
-                //.addApi(Auth.GOOGLE_SIGN_IN_API,gso).enableAutoManage(this,this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso).enableAutoManage(this,this)
                 .build();
     }
 
@@ -610,6 +634,9 @@ public class MainActivity extends AppCompatActivity {
                         b.id = "";
                         b.name = "";
 
+
+
+                        finish();
 
 
                     }

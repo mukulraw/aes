@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 import com.example.solomon.soloapp.POJO.AllFileDetail;
 import com.example.solomon.soloapp.POJO.allBean;
 import com.example.solomon.soloapp.interfaces.allAPIs;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,19 +51,34 @@ public class ViewActivity extends AppCompatActivity {
     GridLayoutManager manager;
     GridAdapter adapter;
     String userId;
+    TextView visible;
     Dialog dialog;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
 
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+
+        visible = (TextView)findViewById(R.id.visible);
+
         dialog = new Dialog(ViewActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.progress_layout);
 
+        toolbar.setTitle("");
 
+        toolbar.setNavigationIcon(R.drawable.back);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         grid = (RecyclerView)findViewById(R.id.grid);
 
@@ -98,6 +116,16 @@ public class ViewActivity extends AppCompatActivity {
 
                 list = response.body().getAllFileDetail();
                 adapter.setGridData(list);
+
+                if (list.size() > 0)
+                {
+                    visible.setVisibility(View.GONE);
+                }
+                else
+                {
+                    visible.setVisibility(View.VISIBLE);
+                }
+
                 dialog.dismiss();
 
             }

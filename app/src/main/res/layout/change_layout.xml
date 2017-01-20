@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:minWidth="300dp"
-    android:background="@color/colorPrimary"
+
     android:layout_height="wrap_content">
 
 
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:gravity="center"
-            android:textColor="#fff"
+            android:textColor="@color/colorPrimary"
             android:text="Enter PIN to change"
             />
 
@@ -32,11 +32,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             app:numDigits="6"
-
             android:id="@+id/pin"
             app:digitWidth="30dp"
             app:digitSpacing="8dp"
             app:mask="*"
+            app:digitBackground="@color/colorPrimary"
+            app:digitTextColor="#fff"
             app:pinInputType="number"
             app:accentType="character"
             app:accentWidth="3dp"
@@ -48,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="OK"
-            android:textColor="#fff"
+            android:textColor="@color/colorPrimary"
             android:textSize="24sp"
             android:padding="18dp"
             android:id="@+id/set"
