@@ -68,7 +68,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-import static android.R.id.edit;
+
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Button download;
 
     Button open;
-    ImageView encImage , decImage;
+
 
     byte[] encodedBytes = null;
 
@@ -93,10 +93,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     String filename;
     String key;
 
-    TextView tvencoded;
-    TextView tvdecoded;
 
-    Bitmap original , encrypted;
 
     Toolbar toolbar;
 
@@ -105,13 +102,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+// Function to initialize Google API with Sign in Authentication.
         buildGoogleApiClient();
 
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
 
-        //buildGoogleApiClient();
+
 
         bean b = (bean)getApplicationContext();
 
@@ -122,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         progress = (ProgressBar)findViewById(R.id.progress);
 
-        //bean b = (bean)getApplicationContext();
+
 
 
 
@@ -175,27 +172,34 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1) {
-            Uri selectedImageUri = data.getData();
+
+try {
+    Uri selectedImageUri = data.getData();
 
 
 
-            if (resultCode == RESULT_OK) {
+    if (resultCode == RESULT_OK) {
 
 
-                path = getPath(getApplicationContext(), selectedImageUri);
+        path = getPath(getApplicationContext(), selectedImageUri);
 
-                Cursor returnCursor =
-                        getContentResolver().query(selectedImageUri, null, null, null, null);
+        Cursor returnCursor =
+                getContentResolver().query(selectedImageUri, null, null, null, null);
 
-                int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-
-
-                //filename = returnCursor.getString(nameIndex);
-
-                new doTask().execute();
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 
 
-            }
+        //filename = returnCursor.getString(nameIndex);
+
+        new doTask().execute();
+
+
+    }
+}catch (Exception e)
+{
+    e.printStackTrace();
+}
+
 
 
         }
@@ -471,7 +475,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 public void onResponse(Call<uploadBean> call, Response<uploadBean> response) {
                     progress.setVisibility(View.GONE);
 
-                    f.delete();
+                    if (f.getAbsoluteFile().delete())
+                    {
+                        Log.d("asdasdasdasd" , "Deleted Successfully");
+                    }
 
 
                 }
@@ -491,22 +498,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-    private void setEncrypted(Bitmap encrypted)
-    {
-        encImage.setImageBitmap(encrypted);
 
 
-        tvencoded.setText("[ENCODED]:\n" +
-                Base64.encodeToString(encodedBytes, Base64.DEFAULT) + "\n");
 
-    }
-
-
-    private void setDecrypted(Bitmap decrypted)
-    {
-
-
-    }
 
 
     @Override
