@@ -1,10 +1,16 @@
 package com.example.solomon.soloapp;
 
+import android.*;
+import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,12 +48,24 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     private static final int RC_SIGN_IN = 9001;
 
+    String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+
     Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
+        if(!hasPermissions(this , PERMISSIONS))
+        {
+            ActivityCompat.requestPermissions(this , PERMISSIONS , REQUEST_CODE_ASK_PERMISSIONS);
+        }
+
+
+
 
         google_signin = (TextView) findViewById(R.id.sign_in_button);
 
@@ -69,6 +87,60 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
 
     }
+
+
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_ASK_PERMISSIONS)
+        {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext() , Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            {
+
+
+
+            }
+            else
+            {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this , Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                    Toast.makeText(getApplicationContext() , "Permissions are required for this app" , Toast.LENGTH_SHORT).show();
+                    finish();
+
+                }
+                //permission is denied (and never ask again is  checked)
+                //shouldShowRequestPermissionRationale will return false
+                else {
+                    Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
+                            .show();
+                    finish();
+                    //                            //proceed with logic by disabling the related features or quit the app.
+                }
+            }
+
+        }
+
+
+    }
+
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
 
 
     private boolean checkPlayServices() {

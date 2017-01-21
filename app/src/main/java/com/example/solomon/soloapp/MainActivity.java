@@ -181,13 +181,7 @@ try {
 
         path = getPath(getApplicationContext(), selectedImageUri);
 
-        Cursor returnCursor =
-                getContentResolver().query(selectedImageUri, null, null, null, null);
 
-        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-
-
-        //filename = returnCursor.getString(nameIndex);
 
         new doTask().execute();
 
@@ -365,7 +359,7 @@ try {
                 e1.printStackTrace();
             }
 
-            Log.d("original" , Arrays.toString(byteArray));
+//            Log.d("original" , Arrays.toString(byteArray));
 
             //String theTestText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 
@@ -402,7 +396,7 @@ try {
                 Log.e("asdasdasd", "AES encryption error");
             }
 
-            Log.d("encrypted" , Arrays.toString(encodedBytes));
+//            Log.d("encrypted" , Arrays.toString(encodedBytes));
 
 
 
@@ -430,7 +424,7 @@ try {
                 Log.e("asdasasdasd" , "AES decryption error");
             }
 
-            Log.d("decoded" , Arrays.toString(decodedBytes));
+            //Log.d("decoded" , Arrays.toString(decodedBytes));
 
 
 
@@ -474,8 +468,6 @@ try {
                 @Override
                 public void onResponse(Call<uploadBean> call, Response<uploadBean> response) {
                     progress.setVisibility(View.GONE);
-
-
 
                     if (f.getAbsoluteFile().delete())
                     {
