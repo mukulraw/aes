@@ -329,11 +329,7 @@ public class ViewActivity extends AppCompatActivity {
 
                 try {
                     Cipher c = Cipher.getInstance("AES");
-
-                    //Log.d("asdasdKEY2" , Arrays.toString(new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING), "AES").getEncoded()));
-
                     Log.d("asdasdKEY2" , Base64.encodeToString(new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING), "AES").getEncoded() , Base64.DEFAULT));
-
                     c.init(Cipher.DECRYPT_MODE, new SecretKeySpec(Base64.decode(key , Base64.NO_PADDING) , "AES"));
                     decodedBytes = c.doFinal(byteArray);
                 } catch (Exception e) {
@@ -366,7 +362,7 @@ public class ViewActivity extends AppCompatActivity {
             dialog.dismiss();
 
             Log.d("asdasdasd", "Download success: " + result);
-            // TODO: show a snackbar or a toast
+
         }
     }
 

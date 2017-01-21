@@ -152,8 +152,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 progress.setVisibility(View.VISIBLE);
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-// tells your intent to get the contents
-// opens the URI for your image directory on your sdcard
                 intent.setType("*/*");
                 startActivityForResult(intent, 1);
 
@@ -198,6 +196,8 @@ try {
 }catch (Exception e)
 {
     e.printStackTrace();
+    progress.setVisibility(View.GONE);
+
 }
 
 
@@ -365,7 +365,7 @@ try {
                 e1.printStackTrace();
             }
 
-            Log.d("original" , Arrays.toString(byteArray));
+//            Log.d("original" , Arrays.toString(byteArray));
 
             //String theTestText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 
@@ -378,7 +378,7 @@ try {
 
                 sks = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
 
-                //key = Arrays.toString(sks.getEncoded());
+
 
                 key = Base64.encodeToString(sks.getEncoded() , Base64.NO_PADDING);
 
@@ -402,7 +402,7 @@ try {
                 Log.e("asdasdasd", "AES encryption error");
             }
 
-            Log.d("encrypted" , Arrays.toString(encodedBytes));
+//            Log.d("encrypted" , Arrays.toString(encodedBytes));
 
 
 
@@ -430,7 +430,7 @@ try {
                 Log.e("asdasasdasd" , "AES decryption error");
             }
 
-            Log.d("decoded" , Arrays.toString(decodedBytes));
+            //Log.d("decoded" , Arrays.toString(decodedBytes));
 
 
 

@@ -75,9 +75,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.Connecti
 
         int checkGooglePlayServices = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(this);
-        //Log.i("DEBUG_TAG",
-        // "checkGooglePlayServicesAvailable, connectionStatusCode="
-        // + checkGooglePlayServices);
 
         if (GooglePlayServicesUtil.isUserRecoverableError(checkGooglePlayServices)) {
             showGooglePlayServicesAvailabilityErrorDialog(checkGooglePlayServices);
